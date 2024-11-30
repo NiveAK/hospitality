@@ -1,0 +1,26 @@
+[
+    {
+        "Regional & Location Analytics": [
+            {
+                "source": "Riyadh",
+                "destination": "London"
+            },
+            {
+                "source": "Jeddah",
+                "destination": "Spain"
+            },
+            {
+                "source": "Dammam",
+                "destination": "Singapore"
+            },
+            {
+                "source": "Makkah",
+                "destination": "Sweden"
+            },
+            {
+                "source": "Madinah",
+                "destination": "Morocco"
+            }
+        ]
+    }
+] 
