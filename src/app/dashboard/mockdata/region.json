@@ -1,0 +1,90 @@
+[
+    {
+        "Regional & Location Analytics": [
+            {
+                "source": "Riyadh",
+                "destination": "London"
+            },
+            {
+                "source": "Makkah",
+                "destination": "Italy"
+            },
+            {
+                "source": "Jeddah",
+                "destination": "Spain"
+            },
+            {
+                "source": "Unayzah",
+                "destination": "UAE"
+            },
+            {
+                "source": "Jubail",
+                "destination": "Turkey"
+            },
+            {
+                "source": "Qatif",
+                "destination": "Germany"
+            },
+            {
+                "source": "Buraydah",
+                "destination": "Sweden"
+            },
+            {
+                "source": "Hail",
+                "destination": "Morocco"
+            },
+            {
+                "source": "Khamis Mushait",
+                "destination": "Egypt"
+            },
+            {
+                "source": "Madinah",
+                "destination": "Netherlands"
+            },
+            {
+                "source": "Yanbu",
+                "destination": "Morocco"
+            },
+            {
+                "source": "Najran",
+                "destination": "Germany"
+            },
+            {
+                "source": "Taif",
+                "destination": "Singapore"
+            },
+            {
+                "source": "Al-Ahsa",
+                "destination": "Jordan"
+            },
+            {
+                "source": "Khobar",
+                "destination": "Dubai"
+            },
+            {
+                "source": "Dammam",
+                "destination": "Dubai"
+            },
+            {
+                "source": "Tabuk",
+                "destination": "Germany"
+            },
+            {
+                "source": "Sabya",
+                "destination": "Switzerland"
+            },
+            {
+                "source": "Jazan",
+                "destination": "Switzerland"
+            },
+            {
+                "source": "Muzahimiyah",
+                "destination": "Netherlands"
+            },
+            {
+                "source": "Bisha",
+                "destination": "Netherlands"
+            }
+        ]
+    }
+]
