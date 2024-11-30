@@ -5,6 +5,7 @@ import * as d3 from 'd3'
 import { feature } from 'topojson-client'
 import { Topology, GeometryCollection } from 'topojson-specification'
 import regionData from '../mockdata/region.json'
+import globalConnectionsData from '../mockdata/globalConnections.json'
 
 interface WorldData extends Topology<{ countries: GeometryCollection }> {
   objects: {
@@ -26,19 +27,19 @@ const cityCoordinates: { [key: string]: [number, number] } = {
   // Saudi Cities
   'Riyadh': [46.6753, 24.7136],
   'Makkah': [39.8579, 21.3891],
-  'Jeddah': [39.1925, 21.4858],
+  'Jeddah': [39.1925, 21.8858],
   'Unayzah': [43.9951, 26.0845],
-  'Jubail': [49.6225, 27.0174],
-  'Qatif': [50.0115, 26.5196],
+  'Jubail': [49.6225, 27.4174],
+  'Qatif': [50.0115, 26.9196],
   'Buraydah': [43.9750, 26.3260],
   'Hail': [41.6957, 27.5219],
   'Khamis Mushait': [42.7333, 18.3000],
   'Madinah': [39.5692, 24.5247],
   'Yanbu': [38.1899, 24.0231],
   'Najran': [44.1277, 17.4922],
-  'Taif': [40.4159, 21.2703],
+  'Taif': [40.4159, 22.1703],
   'Al-Ahsa': [49.6167, 25.3833],
-  'Khobar': [50.1971, 26.2172],
+  'Khobar': [50.1971, 26.0172],
   'Dammam': [50.0888, 26.4207],
   'Tabuk': [36.5662, 28.3835],
   'Sabya': [42.6254, 17.1495],
@@ -63,10 +64,17 @@ const cityCoordinates: { [key: string]: [number, number] } = {
   'Switzerland': [8.2275, 46.8182]
 }
 
-interface Route {
+interface GlobalRoute {
   source: string;
   destination: string;
 }
+
+interface LocalRoute {
+  source: string;
+  count: number;
+}
+
+type Route = GlobalRoute | LocalRoute;
 
 // Move mapDimensions outside the component
 const mapDimensions = {
@@ -89,13 +97,21 @@ export default function Regional() {
   const [viewMode, setViewMode] = useState<'global' | 'saudi'>('global')
 
   // Parse region data
-  const apprenticeshipData = useMemo(() => {
-    const rawData = regionData[0]["Regional & Location Analytics"] || []
-    return rawData.map(entry => ({
-      source: entry.source,
-      destination: entry.destination
-    }))
-  }, [])
+  const apprenticeshipData = useMemo<Route[]>(() => {
+    if (viewMode === 'global') {
+      const rawData = globalConnectionsData[0]["Regional & Location Analytics"] || []
+      return rawData.map(entry => ({
+        source: entry.source,
+        destination: entry.destination
+      }))
+    } else {
+      const rawData = regionData[0]["Regional & Location Analytics"] || []
+      return rawData.map(entry => ({
+        source: entry.source,
+        count: 1
+      }))
+    }
+  }, [viewMode])
 
   const renderMap = useCallback(async () => {
     if (!svgRef.current) return
@@ -150,31 +166,33 @@ export default function Regional() {
       if (viewMode === 'global') {
         const routesGroup = g.append("g").attr("class", "routes")
         connections.forEach((route: Route) => {
-          const sourceCoords = cityCoordinates[route.source]
-          const destCoords = cityCoordinates[route.destination]
+          if ('destination' in route && route.destination) {
+            const sourceCoords = cityCoordinates[route.source]
+            const destCoords = cityCoordinates[route.destination]
 
-          if (sourceCoords && destCoords) {
-            const sourcePos = projection(sourceCoords) as [number, number]
-            const targetPos = projection(destCoords) as [number, number]
+            if (sourceCoords && destCoords) {
+              const sourcePos = projection(sourceCoords) as [number, number]
+              const targetPos = projection(destCoords) as [number, number]
 
-            // Draw route path
-            routesGroup.append("path")
-              .attr("class", "travel-route")
-              .attr("d", drawCurvedRoute(sourcePos, targetPos))
-              .attr("stroke", "#4FD1C5")
-              .attr("stroke-width", 1.5)
-              .attr("fill", "none")
-              .attr("stroke-dasharray", "5,5")
-              .attr("opacity", 0.6)
+              // Draw route path
+              routesGroup.append("path")
+                .attr("class", "travel-route")
+                .attr("d", drawCurvedRoute(sourcePos, targetPos))
+                .attr("stroke", "#4FD1C5")
+                .attr("stroke-width", 1.5)
+                .attr("fill", "none")
+                .attr("stroke-dasharray", "5,5")
+                .attr("opacity", 0.6)
 
-            // Add animated dots
-            routesGroup.append("circle")
-              .attr("r", 3)
-              .attr("fill", "#fff")
-              .append("animateMotion")
-              .attr("dur", "3s")
-              .attr("repeatCount", "indefinite")
-              .attr("path", drawCurvedRoute(sourcePos, targetPos))
+              // Add animated dots
+              routesGroup.append("circle")
+                .attr("r", 3)
+                .attr("fill", "#fff")
+                .append("animateMotion")
+                .attr("dur", "3s")
+                .attr("repeatCount", "indefinite")
+                .attr("path", drawCurvedRoute(sourcePos, targetPos))
+            }
           }
         })
       }
@@ -188,8 +206,14 @@ export default function Regional() {
       Object.entries(cityCoordinates).forEach(([city, coords]) => {
         // Skip non-Saudi cities in Saudi view
         if (viewMode === 'saudi' && !cityCounts[city]) return
-        // Skip destination cities in Saudi view
-        if (viewMode === 'saudi' && !coords[1]) return
+        
+        // In global view, only show cities that are part of active connections
+        if (viewMode === 'global') {
+          const isActiveCity = connections.some(route => 
+            route.source === city || ('destination' in route && route.destination === city)
+          )
+          if (!isActiveCity) return
+        }
 
         const [x, y] = projection(coords) as [number, number]
         
@@ -203,7 +227,7 @@ export default function Regional() {
           .attr("fill", "#4FD1C5")
           .attr("class", "city-marker")
 
-        // City label with count in Saudi view
+        // City label
         cityGroup.append("text")
           .attr("x", 8)
           .attr("y", 4)
