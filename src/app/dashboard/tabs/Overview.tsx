@@ -132,7 +132,7 @@ export default function StudentAnalysis() {
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-5 mb-6">
         <Card className="bg-gradient-to-br from-purple-600/50 to-indigo-600/50 border-0">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white">Total Participants</CardTitle>
@@ -160,6 +160,16 @@ export default function StudentAnalysis() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">{metrics.graduate}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-600/50 to-cyan-600/50 border-0">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-white">Students</CardTitle>
+            <GraduationCap className="h-4 w-4 text-white/70" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">98</div>
           </CardContent>
         </Card>
 
